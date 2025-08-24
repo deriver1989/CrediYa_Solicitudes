@@ -1,6 +1,6 @@
 package co.com.pragma.api.handler;
 
-import co.com.pragma.api.request.UsuarioRequest;
+import co.com.pragma.api.request.SolicitudCreditoRequest;
 import co.com.pragma.usecase.usuario.UsuarioUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -27,12 +27,12 @@ public class HandlerAutenticacion {
         return ServerResponse.ok().bodyValue("Hola Mundo");
     }
 
-    public Mono<ServerResponse> guardarUsuarioNuevo(ServerRequest serverRequest) {
+    public Mono<ServerResponse> guardarSolicitudCredito(ServerRequest serverRequest) {
 
-        return serverRequest.bodyToMono(UsuarioRequest.class)
+        return serverRequest.bodyToMono(SolicitudCreditoRequest.class)
                 .flatMap(userReq -> {
                     // Validar el objeto
-                    BeanPropertyBindingResult errors = new BeanPropertyBindingResult(userReq, UsuarioRequest.class.getName());
+                    BeanPropertyBindingResult errors = new BeanPropertyBindingResult(userReq, SolicitudCreditoRequest.class.getName());
                     validator.validate(userReq, errors);
 
                     if (errors.hasErrors()) {
@@ -47,14 +47,11 @@ public class HandlerAutenticacion {
                     }
 
                     // si pasa validación → usar el caso de uso
-                    return usuarioUseCase.guardarUsuario(
-                                    userReq.getNombres(),
-                                    userReq.getApellidos(),
-                                    userReq.getFecha_nacimiento(),
-                                    userReq.getDireccion(),
-                                    userReq.getTelefono(),
-                                    userReq.getCorreo_electronico(),
-                                    userReq.getSalario_base()
+                    return usuarioUseCase.guardarSolicitudCredito(
+                                    userReq.getDocumentoCliente(),
+                                    userReq.getMonto(),
+                                    userReq.getPlazo(),
+                                    userReq.getTipoPrestamo()
                             )
                             .flatMap(user -> ServerResponse.ok().bodyValue(user))
                             .onErrorResume(e ->

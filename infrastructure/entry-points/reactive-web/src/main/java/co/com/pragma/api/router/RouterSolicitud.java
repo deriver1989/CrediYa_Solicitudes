@@ -11,11 +11,9 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class RouterUsuario {
+public class RouterSolicitud {
     @Bean
     public RouterFunction<ServerResponse> routerFunction(HandlerAutenticacion handler) {
-        return route(GET("/api/v1/usuarios"), handler::listenGETUseCase)
-                .andRoute(POST("/api/v1/usuarios/guardar-usuario"), handler::guardarUsuarioNuevo)
-                .and(route(GET("/api/v1/usuarios/prueba"), handler::holaMundo));
+        return route(POST("POST /api/v1/solicitud"), handler::guardarSolicitudCredito);
     }
 }

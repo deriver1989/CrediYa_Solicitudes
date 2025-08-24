@@ -1,34 +1,30 @@
 package co.com.pragma.usecase.usuario;
 
-import co.com.pragma.model.usuario.Usuario;
-import co.com.pragma.model.usuario.gateways.UsuarioRepository;
+import co.com.pragma.model.usuario.SolicitudCredito;
+import co.com.pragma.model.usuario.gateways.SolicitudCreditoRepository;
 import reactor.core.publisher.Mono;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 //@RequiredArgsConstructor
 public class UsuarioUseCase {
 
-    private final UsuarioRepository usuarioRepository;
+    private final SolicitudCreditoRepository solicitudCreditoRepository;
 
-    public UsuarioUseCase(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
+    public UsuarioUseCase(SolicitudCreditoRepository solicitudCreditoRepository) {
+        this.solicitudCreditoRepository = solicitudCreditoRepository;
     }
 
-    public Mono<Usuario> guardarUsuario(String nombres,
-                                        String apellidos,
-                                        LocalDate fecha_nacimiento,
-                                        String direccion,
-                                        String telefono,
-                                        String correo_electronico,
-                                        Double salario_base
+    public Mono<SolicitudCredito> guardarSolicitudCredito(String documento,
+                                                          BigDecimal monto,
+                                                          Integer plazo,
+                                                          Long tipoCredito
     ) {
-        Usuario usuario = new Usuario(nombres,
-                apellidos,
-                fecha_nacimiento,
-                direccion,
-                telefono,
-                correo_electronico,
-                salario_base);
-        return usuarioRepository.saveUsuario(usuario);
+        SolicitudCredito solicitud = new SolicitudCredito(documento,
+                monto,
+                plazo,
+                tipoCredito);
+        return solicitudCreditoRepository.saveSolicitudCredito(solicitud);
     }
 }
