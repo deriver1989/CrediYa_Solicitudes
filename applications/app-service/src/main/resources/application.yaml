@@ -1,8 +1,8 @@
 server:
-  port: 8081
+  port: 8082
 spring:
   application:
-    name: "CrediYa"
+    name: "CrediYa_Solicitudes"
   devtools:
     add-properties: false
   h2:
@@ -24,9 +24,9 @@ cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
 adapters:
   r2dbc:
-    host: localhost
+    host: "localhost"
     port: 5432
-    database: CrediYa
-    schema:
-    username: postgres
+    database: "CrediYa"
+    schema: null
+    username: "postgres"
     password: 123456
