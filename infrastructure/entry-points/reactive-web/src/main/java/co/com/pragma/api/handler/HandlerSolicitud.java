@@ -47,6 +47,10 @@ public class HandlerSolicitud {
                             .onErrorResume(e ->
                                     ServerResponse.badRequest().bodyValue(e.getMessage())
                             );
+                })
+                .onErrorResume(e -> {
+                    return ServerResponse.badRequest()
+                            .bodyValue("Error al guardar la solicitud: " + e.getMessage());
                 });
     }
 }

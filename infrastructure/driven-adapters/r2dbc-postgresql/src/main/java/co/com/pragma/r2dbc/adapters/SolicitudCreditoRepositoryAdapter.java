@@ -3,6 +3,7 @@ package co.com.pragma.r2dbc.adapters;
 import co.com.pragma.model.solicitud.SolicitudCredito;
 import co.com.pragma.r2dbc.entity.SolicitudCreditoEntity;
 import co.com.pragma.r2dbc.entity.TipoPrestamoEntity;
+import co.com.pragma.r2dbc.enums.EstadoCredito;
 import co.com.pragma.r2dbc.repository.SolicitudCreditoRepository;
 import co.com.pragma.r2dbc.repository.TipoPrestamoRepository;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,9 @@ public class SolicitudCreditoRepositoryAdapter implements co.com.pragma.model.so
                 solicitud.getTipoPrestamo(),
                 solicitud.getMonto(),
                 solicitud.getPlazo(),
-                solicitud.getDocumentoCliente());
+                solicitud.getDocumentoCliente(),
+                EstadoCredito.PENDIENTE_APROBACION.name()
+                );
 
         return tipoPrestamoRepository.findById(entity.getTipoPrestamo())
                 .switchIfEmpty(Mono.error(new RuntimeException("El tipo de préstamo no existe.")))

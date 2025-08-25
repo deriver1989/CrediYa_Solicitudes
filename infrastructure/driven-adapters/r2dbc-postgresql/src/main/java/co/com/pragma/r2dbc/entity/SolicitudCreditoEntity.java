@@ -25,15 +25,17 @@ public class SolicitudCreditoEntity {
     @Column("monto")
     private BigDecimal monto;
 
-
     @Column("id_tipo_prestamo")
     private Long tipoPrestamo;
 
+    @Column("estado")
+    private String estado;
 
-    public SolicitudCreditoEntity(Long tipoPrestamo, BigDecimal monto, Integer plazo, String documentoCliente) {
+    public SolicitudCreditoEntity(Long tipoPrestamo, BigDecimal monto, Integer plazo, String documentoCliente, String estado) {
         this.tipoPrestamo = tipoPrestamo;
         this.monto = monto;
         this.plazo = plazo;
         this.documentoCliente = documentoCliente;
+        this.estado =  estado;
     }
 }
