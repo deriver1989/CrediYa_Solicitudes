@@ -1,18 +1,17 @@
-package co.com.pragma.usecase.usuario;
+package co.com.pragma.usecase.solicitud;
 
-import co.com.pragma.model.usuario.SolicitudCredito;
-import co.com.pragma.model.usuario.gateways.SolicitudCreditoRepository;
+import co.com.pragma.model.solicitud.SolicitudCredito;
+import co.com.pragma.model.solicitud.gateways.SolicitudCreditoRepository;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 //@RequiredArgsConstructor
-public class UsuarioUseCase {
+public class SolicitudUseCase {
 
     private final SolicitudCreditoRepository solicitudCreditoRepository;
 
-    public UsuarioUseCase(SolicitudCreditoRepository solicitudCreditoRepository) {
+    public SolicitudUseCase(SolicitudCreditoRepository solicitudCreditoRepository) {
         this.solicitudCreditoRepository = solicitudCreditoRepository;
     }
 
@@ -22,8 +21,8 @@ public class UsuarioUseCase {
                                                           Long tipoCredito
     ) {
         SolicitudCredito solicitud = new SolicitudCredito(documento,
-                monto,
                 plazo,
+                monto,
                 tipoCredito);
         return solicitudCreditoRepository.saveSolicitudCredito(solicitud);
     }

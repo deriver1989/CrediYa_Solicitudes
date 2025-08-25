@@ -1,7 +1,7 @@
 package co.com.pragma.api.handler;
 
 import co.com.pragma.api.request.SolicitudCreditoRequest;
-import co.com.pragma.usecase.usuario.UsuarioUseCase;
+import co.com.pragma.usecase.solicitud.SolicitudUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -12,20 +12,10 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-public class HandlerAutenticacion {
+public class HandlerSolicitud {
 
-    private final UsuarioUseCase usuarioUseCase;
+    private final SolicitudUseCase solicitudUseCase;
     private final Validator validator;
-
-    public Mono<ServerResponse> listenGETUseCase(ServerRequest serverRequest) {
-        // useCase.logic();
-        return ServerResponse.ok().bodyValue("");
-    }
-
-    public Mono<ServerResponse> holaMundo(ServerRequest serverRequest) {
-        // useCase2.logic();
-        return ServerResponse.ok().bodyValue("Hola Mundo");
-    }
 
     public Mono<ServerResponse> guardarSolicitudCredito(ServerRequest serverRequest) {
 
@@ -47,7 +37,7 @@ public class HandlerAutenticacion {
                     }
 
                     // si pasa validación → usar el caso de uso
-                    return usuarioUseCase.guardarSolicitudCredito(
+                    return solicitudUseCase.guardarSolicitudCredito(
                                     userReq.getDocumentoCliente(),
                                     userReq.getMonto(),
                                     userReq.getPlazo(),
