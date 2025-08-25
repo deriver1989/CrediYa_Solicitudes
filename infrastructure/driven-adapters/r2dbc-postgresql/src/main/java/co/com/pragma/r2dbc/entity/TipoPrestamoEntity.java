@@ -1,21 +1,21 @@
 package co.com.pragma.r2dbc.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.annotation.Id;
 import lombok.*;
 
-@Entity
-@Table(name = "tipo_prestamo")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@Table(name = "tipo_prestamo")
 public class TipoPrestamoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column("id")
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column("nombre")
     private String nombre;
 }
