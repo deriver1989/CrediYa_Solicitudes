@@ -1,33 +1,41 @@
 package co.com.pragma.r2dbc.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.annotation.Id;
 import lombok.*;
 
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "solicitud_credito")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@Table(name = "solicitud_credito")
 public class SolicitudCreditoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String documentoCliente;
 
-    @Column(name = "plazo", nullable = false, precision = 5, scale = 0)
+    @Column("plazo")
     private Integer plazo;
 
-    @Column(name = "monto", nullable = false, precision = 15, scale = 2)
+    @Column("monto")
     private BigDecimal monto;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_tipo_prestamo", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_usuario"))
-    private TipoPrestamoEntity tipoPrestamo;
+    @Column("id_tipo_prestamo")
+    private Long tipoPrestamo;
+
+    @Column("estado")
+    private String estado;
+
+    public SolicitudCreditoEntity(Long tipoPrestamo, BigDecimal monto, Integer plazo, String documentoCliente, String estado) {
+        this.tipoPrestamo = tipoPrestamo;
+        this.monto = monto;
+        this.plazo = plazo;
+        this.documentoCliente = documentoCliente;
+        this.estado =  estado;
+    }
 }

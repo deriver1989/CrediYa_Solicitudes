@@ -1,4 +1,4 @@
-package co.com.pragma.model.usuario;
+package co.com.pragma.model.solicitud;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
