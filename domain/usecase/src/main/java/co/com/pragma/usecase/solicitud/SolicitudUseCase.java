@@ -15,15 +15,15 @@ public class SolicitudUseCase {
         this.solicitudCreditoRepository = solicitudCreditoRepository;
     }
 
-    public Mono<SolicitudCredito> guardarSolicitudCredito(String documento,
-                                                          BigDecimal monto,
-                                                          Integer plazo,
-                                                          Long tipoCredito
-    ) {
-        SolicitudCredito solicitud = new SolicitudCredito(documento,
-                plazo,
-                monto,
-                tipoCredito);
-        return solicitudCreditoRepository.saveSolicitudCredito(solicitud);
+    public Mono<SolicitudCredito> guardarSolicitudCredito(SolicitudCredito solicitudR) {
+        SolicitudCredito solicitud = new SolicitudCredito(solicitudR.getDocumentoCliente(),
+                solicitudR.getPlazo(),
+                solicitudR.getMonto(),
+                solicitudR.getTipoPrestamo());
+        return solicitudCreditoRepository.findByIdTipoPrestamo(solicitud.getTipoPrestamo())
+                .switchIfEmpty(Mono.error(new RuntimeException("El tipo de préstamo no existe.")))
+                .flatMap(tipo ->{
+                    return solicitudCreditoRepository.saveSolicitudCredito(solicitud);
+                });
     }
 }
