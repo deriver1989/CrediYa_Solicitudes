@@ -1,6 +1,7 @@
 package co.com.pragma.r2dbc.adapters;
 
 import co.com.pragma.model.solicitud.SolicitudCredito;
+import co.com.pragma.model.solicitud.TipoPrestamo;
 import co.com.pragma.r2dbc.entity.SolicitudCreditoEntity;
 import co.com.pragma.r2dbc.entity.TipoPrestamoEntity;
 import co.com.pragma.r2dbc.enums.EstadoCredito;
@@ -37,19 +38,24 @@ public class SolicitudCreditoRepositoryAdapter implements co.com.pragma.model.so
                 EstadoCredito.PENDIENTE_APROBACION.name()
                 );
 
-        return tipoPrestamoRepository.findById(entity.getTipoPrestamo())
-                .switchIfEmpty(Mono.error(new RuntimeException("El tipo de préstamo no existe.")))
-                .flatMap(tipo -> {
-                    return solicitudCreditoRepository.save(entity)
-                            .as(txOperator::transactional)
-                            .map(saved -> new SolicitudCredito(saved.getDocumentoCliente(),
-                                    saved.getPlazo(),
-                                    saved.getMonto(),
-                                    saved.getTipoPrestamo()));
-                })
+        return solicitudCreditoRepository.save(entity)
+                .as(txOperator::transactional)
+                .map(saved -> new SolicitudCredito(saved.getDocumentoCliente(),
+                        saved.getPlazo(),
+                        saved.getMonto(),
+                        saved.getTipoPrestamo()))
                 .doOnError(error -> log.error("Error al guardar la solicitud", error))
-                .doOnSuccess(user -> log.info("Proceso finalizado con éxito, la solicitud ha sido guardada."))
-                ;
+                .doOnSuccess(user -> log.info("Proceso finalizado con éxito, la solicitud ha sido guardada."));
+    }
+
+    @Override
+    public Mono<TipoPrestamo> findByIdTipoPrestamo(Long id) {
+        return tipoPrestamoRepository.findById(id)
+                .map(entity -> TipoPrestamo.builder()
+                .id(entity.getId())
+                .nombre(entity.getNombre())
+                .build()
+                );
     }
 
 }
