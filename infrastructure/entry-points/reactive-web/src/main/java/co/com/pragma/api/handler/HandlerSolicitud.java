@@ -42,7 +42,7 @@ public class HandlerSolicitud {
 
                     // si pasa validación → usar el caso de uso
                     return solicitudUseCase.guardarSolicitudCredito(mapToUsuario(userReq))
-                            .flatMap(user -> ServerResponse.ok().bodyValue(user))
+                            .flatMap(user -> ServerResponse.ok().bodyValue("Solicitud guardada con éxito."))
                             .onErrorResume(e -> {
                                         return ServerResponse.badRequest().bodyValue(generarJsonMsg("Error al guardar la solicitud de crédito.",e.getMessage()));
                                     }
