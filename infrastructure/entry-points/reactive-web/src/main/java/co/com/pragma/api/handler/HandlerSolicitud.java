@@ -4,6 +4,9 @@ import co.com.pragma.api.request.SolicitudCreditoRequest;
 import co.com.pragma.model.solicitud.SolicitudCredito;
 import co.com.pragma.usecase.solicitud.SolicitudUseCase;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Validator;
@@ -12,6 +15,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -39,14 +43,20 @@ public class HandlerSolicitud {
                                         ))
                         );
                     }
+                    return ReactiveSecurityContextHolder.getContext()
+                            .flatMap(ctx -> {
+                                Jwt jwt = (Jwt) ctx.getAuthentication().getPrincipal();
+                                String username = jwt.getClaimAsString("sub"); // o "preferred_username"
+                                List<String> roles = List.of(jwt.getClaimAsString("roles").split(","));
 
-                    // si pasa validación → usar el caso de uso
-                    return solicitudUseCase.guardarSolicitudCredito(mapToUsuario(userReq))
-                            .flatMap(user -> ServerResponse.ok().bodyValue(user))
-                            .onErrorResume(e -> {
-                                        return ServerResponse.badRequest().bodyValue(generarJsonMsg("Error al guardar la solicitud de crédito.",e.getMessage()));
-                                    }
-                            );
+                                // si pasa validación → usar el caso de uso
+                                return solicitudUseCase.guardarSolicitudCredito(mapToUsuario(userReq, username, roles))
+                                        .flatMap(user -> ServerResponse.ok().bodyValue(user))
+                                        .onErrorResume(e -> {
+                                                    return ServerResponse.badRequest().bodyValue(generarJsonMsg("Error al guardar la solicitud de crédito.", e.getMessage()));
+                                                }
+                                        );
+                            });
                 })
                 .onErrorResume(e -> {
                     return ServerResponse.badRequest().bodyValue(generarJsonMsg("Error al guardar la solicitud de crédito.",""));
@@ -60,13 +70,15 @@ public class HandlerSolicitud {
         return errorResponse;
     }
 
-    private SolicitudCredito mapToUsuario(SolicitudCreditoRequest request) {
-        return new SolicitudCredito(
-                request.getDocumentoCliente(),
-                request.getPlazo(),
-                request.getMonto(),
-                request.getTipoPrestamo()
-        );
+    private SolicitudCredito mapToUsuario(SolicitudCreditoRequest request, String username , List<String> roles) {
+        SolicitudCredito nuevo = new SolicitudCredito();
+        nuevo.setDocumentoCliente(request.getDocumentoCliente());
+        nuevo.setPlazo(request.getPlazo());
+        nuevo.setMonto(request.getMonto());
+        nuevo.setTipoPrestamo(request.getTipoPrestamo());
+        nuevo.setUsername(username);
+        nuevo.setRoles(roles);
+        return nuevo;
     }
 
 }

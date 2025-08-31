@@ -1,0 +1,38 @@
+package co.com.pragma.r2dbc.adapters;
+
+import co.com.pragma.model.usuario.Usuario;
+import co.com.pragma.model.usuario.gateways.UsuarioRepository;
+import co.com.pragma.r2dbc.repository.UsuarioEntityRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.reactive.TransactionalOperator;
+import reactor.core.publisher.Mono;
+
+@Component
+@Slf4j
+public class UsuarioRepositoryAdapter implements UsuarioRepository {
+
+    private final UsuarioEntityRepository usuarioEntityRepository;
+    private final TransactionalOperator txOperator;
+
+    public UsuarioRepositoryAdapter(UsuarioEntityRepository usuarioEntityRepository, TransactionalOperator txOperator) {
+        this.usuarioEntityRepository = usuarioEntityRepository;
+        this.txOperator = txOperator;
+    }
+
+
+    @Override
+    public Mono<Usuario> findByCorreoElectronico(String documento) {
+        return usuarioEntityRepository.findBycorreoElectronico(documento)
+                .map(saved -> new Usuario(saved.getNombres(),
+                        saved.getApellidos(),
+                        saved.getFechaNacimiento(),
+                        saved.getDireccion(),
+                        saved.getTelefono(),
+                        saved.getCorreoElectronico(),
+                        saved.getSalarioBase(),
+                        saved.getDocumento()))
+                .doOnError(error -> log.error("Error al consultar el solicitante", error))
+                ;
+    }
+}
