@@ -3,6 +3,7 @@ package co.com.pragma.usecase.solicitud;
 import co.com.pragma.model.solicitud.SolicitudCredito;
 import co.com.pragma.model.solicitud.gateways.SolicitudCreditoRepository;
 import co.com.pragma.model.usuario.gateways.UsuarioRepository;
+import co.com.pragma.usecase.solicitud.mensaje.Mensaje;
 import reactor.core.publisher.Mono;
 
 public class SolicitudUseCase {
@@ -23,15 +24,15 @@ public class SolicitudUseCase {
         solicitud.setTipoPrestamo(solicitudR.getTipoPrestamo());
 
         return solicitudCreditoRepository.findByIdTipoPrestamo(solicitud.getTipoPrestamo())
-                .switchIfEmpty(Mono.error(new RuntimeException("El tipo de préstamo no existe.")))
+                .switchIfEmpty(Mono.error(new RuntimeException(Mensaje.TIPO_PRESTAMO_NO_EXISTE)))
                 .flatMap(tipo ->{
                     return usuarioRepository.findByCorreoElectronico(solicitudR.getUsername())
-                            .switchIfEmpty(Mono.error(new RuntimeException("El solicitante no existe.")))
+                            .switchIfEmpty(Mono.error(new RuntimeException(Mensaje.SOLICITANTE_NO_EXISTE)))
                             .flatMap(usuario -> {
                                 if (usuario.getDocumento().equals(solicitud.getDocumentoCliente())) {
                                     return solicitudCreditoRepository.saveSolicitudCredito(solicitud);
                                 } else {
-                                    return Mono.error(new RuntimeException("Operación no permitida: el documento del solicitante no coincide con el usuario autenticado."));
+                                    return Mono.error(new RuntimeException(Mensaje.DOCUMENTO_SOLICITANTE_NO_COINCIDE));
                                 }
                             });
                 });

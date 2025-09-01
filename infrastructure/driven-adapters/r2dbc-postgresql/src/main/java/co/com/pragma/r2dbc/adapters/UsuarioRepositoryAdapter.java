@@ -2,6 +2,7 @@ package co.com.pragma.r2dbc.adapters;
 
 import co.com.pragma.model.usuario.Usuario;
 import co.com.pragma.model.usuario.gateways.UsuarioRepository;
+import co.com.pragma.r2dbc.mensaje.Mensaje;
 import co.com.pragma.r2dbc.repository.UsuarioEntityRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class UsuarioRepositoryAdapter implements UsuarioRepository {
                         saved.getCorreoElectronico(),
                         saved.getSalarioBase(),
                         saved.getDocumento()))
-                .doOnError(error -> log.error("Error al consultar el solicitante", error))
+                .doOnError(error -> log.error(Mensaje.ERROR_CONSULTAR_SOLICITANTE, error))
                 ;
     }
 }

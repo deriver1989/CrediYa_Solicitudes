@@ -1,5 +1,6 @@
 package co.com.pragma.api.handler;
 
+import co.com.pragma.api.mensaje.Mensaje;
 import co.com.pragma.api.request.SolicitudCreditoRequest;
 import co.com.pragma.model.solicitud.SolicitudCredito;
 import co.com.pragma.usecase.solicitud.SolicitudUseCase;
@@ -46,20 +47,19 @@ public class HandlerSolicitud {
                     return ReactiveSecurityContextHolder.getContext()
                             .flatMap(ctx -> {
                                 Jwt jwt = (Jwt) ctx.getAuthentication().getPrincipal();
-                                String username = jwt.getClaimAsString("sub"); // o "preferred_username"
+                                String username = jwt.getClaimAsString("sub"); //obtener username
                                 List<String> roles = List.of(jwt.getClaimAsString("roles").split(","));
 
-                                // si pasa validación → usar el caso de uso
                                 return solicitudUseCase.guardarSolicitudCredito(mapToUsuario(userReq, username, roles))
                                         .flatMap(user -> ServerResponse.ok().bodyValue(user))
                                         .onErrorResume(e -> {
-                                                    return ServerResponse.badRequest().bodyValue(generarJsonMsg("Error al guardar la solicitud de crédito.", e.getMessage()));
+                                                    return ServerResponse.badRequest().bodyValue(generarJsonMsg(Mensaje.ERROR_GUARDAR_SOLICITUD, e.getMessage()));
                                                 }
                                         );
                             });
                 })
                 .onErrorResume(e -> {
-                    return ServerResponse.badRequest().bodyValue(generarJsonMsg("Error al guardar la solicitud de crédito.",""));
+                    return ServerResponse.badRequest().bodyValue(generarJsonMsg(Mensaje.ERROR_GUARDAR_SOLICITUD,""));
                 });
     }
 

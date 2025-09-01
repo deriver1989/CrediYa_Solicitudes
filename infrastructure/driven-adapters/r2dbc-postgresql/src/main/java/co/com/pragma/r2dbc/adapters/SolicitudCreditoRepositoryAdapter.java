@@ -3,8 +3,8 @@ package co.com.pragma.r2dbc.adapters;
 import co.com.pragma.model.solicitud.SolicitudCredito;
 import co.com.pragma.model.solicitud.TipoPrestamo;
 import co.com.pragma.r2dbc.entity.SolicitudCreditoEntity;
-import co.com.pragma.r2dbc.entity.TipoPrestamoEntity;
 import co.com.pragma.r2dbc.enums.EstadoCredito;
+import co.com.pragma.r2dbc.mensaje.Mensaje;
 import co.com.pragma.r2dbc.repository.SolicitudCreditoRepository;
 import co.com.pragma.r2dbc.repository.TipoPrestamoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +44,8 @@ public class SolicitudCreditoRepositoryAdapter implements co.com.pragma.model.so
                         saved.getPlazo(),
                         saved.getMonto(),
                         saved.getTipoPrestamo()))
-                .doOnError(error -> log.error("Error al guardar la solicitud", error))
-                .doOnSuccess(user -> log.info("Proceso finalizado con éxito, la solicitud ha sido guardada."));
+                .doOnError(error -> log.error(Mensaje.ERROR_GUARDAR_SOLICITUD, error))
+                .doOnSuccess(user -> log.info(Mensaje.SOLICITUD_GUARDADA_EXITO));
     }
 
     @Override

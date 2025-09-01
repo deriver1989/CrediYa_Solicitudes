@@ -31,8 +31,5 @@ public class SecurityConfig {
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter)
                         )
                 ).build();
-                /*.oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwtSpec -> jwtSpec.jwtDecoder(jwtDecoder))
-                ).build();*/
     }
 }
