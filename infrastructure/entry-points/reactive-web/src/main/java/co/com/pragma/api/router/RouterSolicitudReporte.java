@@ -14,6 +14,7 @@ public class RouterSolicitudReporte {
     @Bean
 
     public RouterFunction<ServerResponse> routerFunctionReporte(HandlerSolicitudReporte handler) {
-        return route(GET("/api/v1/reporte"), handler::getReporte);
+        return route(GET("/api/v1/reporte"), handler::getReporte)
+        .and(route(GET("/api/v1/reporte/listadosolicitudes"), handler::getReporteListadoSolicitudes));
     }
 }
