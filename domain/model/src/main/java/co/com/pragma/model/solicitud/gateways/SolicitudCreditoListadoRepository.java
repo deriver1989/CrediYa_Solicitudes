@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 public interface SolicitudCreditoListadoRepository {
 
-    /*Mono<Page<PendienteAprobacion>>*/ Flux<PendienteAprobacion> consultarListado(PendienteAprobacionRequest criterio, Integer page, Integer size);
+    Flux<PendienteAprobacion> listarPendientes(PendienteAprobacionRequest criterio, Integer page, Integer size);
+    Mono<Long> consulListadoCantidad(PendienteAprobacionRequest criterio);
 
-    Flux<PendienteAprobacion> listarPendientes(Integer page, Integer size);
 }

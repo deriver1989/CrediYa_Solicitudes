@@ -8,10 +8,6 @@ import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -26,42 +22,24 @@ public class ListaSolicitudesPendientesAdapter implements SolicitudCreditoListad
     private final SolicitudCreditoRepository solicitudCreditoRepository;
     private final DatabaseClient client;
 
-    @Override
-    public /*Mono<Page<PendienteAprobacion>>*/Flux<PendienteAprobacion> consultarListado(PendienteAprobacionRequest criterio , Integer page, Integer size) {
-
-        int offset = page * size;
-        int limit = size;
-
-        Mono<Long> count = consulListadoCantidad(criterio);
-        //Flux<PendienteAprobacion> data =
-                return solicitudCreditoRepository.ListaSolicitudPendienteAprobacion(
-                        criterio.getDocumento(),
-                        criterio.getPlazo(),
-                        criterio.getTipoPrestamo(),
-                        limit,
-                        offset
-                ).map(d-> new PendienteAprobacion(d.getDocumento(),d.getPlazo(),d.getMonto(),d.getTipoPrestamo(),d.getEstado()));
-
-       // Pageable pageable = PageRequest.of(page, size);
-
-       /* return data.collectList()
-                .zipWith(count)
-                .map(tuple -> new PageImpl<>(
-                        tuple.getT1(), // lista de responses
-                        pageable,
-                        tuple.getT2()
-                ));*/
-    }
-
     public Mono<Long> consulListadoCantidad(PendienteAprobacionRequest criterio) {
-        return solicitudCreditoRepository.cantidadDatos(criterio.getDocumento(),
-                criterio.getPlazo(),
-                criterio.getTipoPrestamo()
-        );
+
+        String query = """
+                SELECT count(*) as total
+                FROM solicitud_credito sc
+                INNER JOIN tipo_prestamo tp ON tp.id = sc.id_tipo_prestamo
+                WHERE sc.estado = 'PENDIENTE_APROBACION' 
+                """
+                + (criterio != null && criterio.getDocumento() != null ? " and sc.documento_cliente ILIKE '%"+criterio.getDocumento()+"%'" : "")
+                + (criterio != null && criterio.getTipoPrestamo() != null ? " and tp.id = "+criterio.getTipoPrestamo() : "")
+                + (criterio != null && criterio.getPlazo() != null ? " and sc.plazo = "+criterio.getPlazo() : "");
+        return client.sql(query)
+                .map((row, meta) -> row.get("total", Long.class))
+                .one();
     }
 
 
-    public Flux<PendienteAprobacion> listarPendientes(Integer page, Integer size) {
+    public Flux<PendienteAprobacion> listarPendientes(PendienteAprobacionRequest criterio, Integer page, Integer size) {
         String query = """
                 SELECT sc.documento_cliente as documento,
                        sc.plazo,
@@ -71,9 +49,12 @@ public class ListaSolicitudesPendientesAdapter implements SolicitudCreditoListad
                 FROM solicitud_credito sc
                 INNER JOIN tipo_prestamo tp ON tp.id = sc.id_tipo_prestamo
                 WHERE sc.estado = 'PENDIENTE_APROBACION' 
-                """;
+                """
+                + (criterio != null && criterio.getDocumento() != null ? " and sc.documento_cliente ILIKE '%"+criterio.getDocumento()+"%'" : "")
+                + (criterio != null && criterio.getTipoPrestamo() != null ? " and tp.id = "+criterio.getTipoPrestamo() : "")
+                + (criterio != null && criterio.getPlazo() != null ? " and sc.plazo = "+criterio.getPlazo() : "");
         query += " LIMIT "+size+" OFFSET "+ page*size;
-
+        System.out.println(query);
         return client.sql(query)
                 .map(this::mapRow)
                 .all();

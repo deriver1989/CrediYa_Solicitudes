@@ -18,23 +18,11 @@ public class SolicitudReporteUseCase {
 
 
     public Flux<PendienteAprobacion> guardarSolicitudCredito(PendienteAprobacionRequest request, Integer page, Integer size) {
+        return solicitudCreditoListadoRepository.listarPendientes(request,page, size);
+    }
 
-        //Mono<Long> count = solicitudCreditoListadoRepository.consulListadoCantidad(request);
-
-        //return solicitudCreditoListadoRepository.consultarListado(request, page, size);
-                /*.flatMap({ data -> {
-                    return data.collectList()
-                            .zipWith(count)
-                            .map(tuple -> new PageImpl<>(
-                                    tuple.getT1(),
-                                    pageable,
-                                    tuple.getT2()
-                            ));
-                    }
-
-                });*/
-        return solicitudCreditoListadoRepository.listarPendientes(page, size);
-
+    public Mono<Long> consultarCantidad(PendienteAprobacionRequest request) {
+        return solicitudCreditoListadoRepository.consulListadoCantidad(request);
     }
 
 }
