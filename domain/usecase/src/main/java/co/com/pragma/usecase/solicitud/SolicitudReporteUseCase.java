@@ -7,6 +7,7 @@ import co.com.pragma.model.solicitud.gateways.SolicitudCreditoListadoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+
 public class SolicitudReporteUseCase {
 
     private final SolicitudCreditoListadoRepository solicitudCreditoListadoRepository;
@@ -18,10 +19,10 @@ public class SolicitudReporteUseCase {
 
     public Flux<PendienteAprobacion> guardarSolicitudCredito(PendienteAprobacionRequest request, Integer page, Integer size) {
 
-        Mono<Long> count = solicitudCreditoListadoRepository.consulListadoCantidad(request);
+        //Mono<Long> count = solicitudCreditoListadoRepository.consulListadoCantidad(request);
 
-        return solicitudCreditoListadoRepository.consultarListado(request, page, size)
-                .flatMap({ data -> {
+        //return solicitudCreditoListadoRepository.consultarListado(request, page, size);
+                /*.flatMap({ data -> {
                     return data.collectList()
                             .zipWith(count)
                             .map(tuple -> new PageImpl<>(
@@ -31,7 +32,8 @@ public class SolicitudReporteUseCase {
                             ));
                     }
 
-                });
+                });*/
+        return solicitudCreditoListadoRepository.listarPendientes(page, size);
 
     }
 

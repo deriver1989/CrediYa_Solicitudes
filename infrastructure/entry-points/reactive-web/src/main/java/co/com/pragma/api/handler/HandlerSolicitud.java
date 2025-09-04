@@ -5,6 +5,7 @@ import co.com.pragma.api.request.SolicitudCreditoRequest;
 import co.com.pragma.model.solicitud.SolicitudCredito;
 import co.com.pragma.usecase.solicitud.SolicitudUseCase;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -51,7 +52,7 @@ public class HandlerSolicitud {
                                 List<String> roles = List.of(jwt.getClaimAsString("roles").split(","));
 
                                 return solicitudUseCase.guardarSolicitudCredito(mapToUsuario(userReq, username, roles))
-                                        .flatMap(user -> ServerResponse.ok().bodyValue(user))
+                                        .flatMap(user -> ServerResponse.status(HttpStatus.CREATED).bodyValue(user))
                                         .onErrorResume(e -> {
                                                     return ServerResponse.badRequest().bodyValue(generarJsonMsg(Mensaje.ERROR_GUARDAR_SOLICITUD, e.getMessage()));
                                                 }
