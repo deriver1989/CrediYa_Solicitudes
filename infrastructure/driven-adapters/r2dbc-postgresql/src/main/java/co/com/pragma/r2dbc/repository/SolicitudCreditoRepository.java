@@ -16,15 +16,11 @@ public interface SolicitudCreditoRepository extends ReactiveCrudRepository<Solic
                 	plazo,
                 	monto,
                 	tp.nombre as tipoPrestamo,
-                	sc.estado\s
-            FROM solicitud_credito sc\s
-            inner join tipo_prestamo tp on tp.id = sc.id_tipo_prestamo\s
+                	sc.estado
+            FROM solicitud_credito sc
+            inner join tipo_prestamo tp on tp.id = sc.id_tipo_prestamo
             WHERE estado = 'PENDIENTE_APROBACION'
-            AND (:documento IS NULL OR documento_cliente ILIKE :documento)
-            AND (:plazo IS NULL OR plazo ILIKE :plazo)
-            AND (:tipoPrestamo IS NULL OR monto = :tipoPrestamo)
-            LIMIT :limit OFFSET :offset
-       """)
+           """)
     Flux<PendienteAprobacionResponse> ListaSolicitudPendienteAprobacion(@Param("documento") String documento,
                                                                         @Param("plazo") Integer plazo,
                                                                         @Param("tipoPrestamo") Integer tipoPrestamo,
