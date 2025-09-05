@@ -4,10 +4,7 @@ import co.com.pragma.model.solicitud.SolicitudCredito;
 import co.com.pragma.model.solicitud.gateways.SolicitudCreditoRepository;
 import co.com.pragma.model.usuario.gateways.UsuarioRepository;
 import co.com.pragma.usecase.solicitud.mensaje.Mensaje;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.awt.print.Pageable;
 
 public class SolicitudUseCase {
 
