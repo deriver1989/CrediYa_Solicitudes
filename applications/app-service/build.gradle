@@ -1,4 +1,9 @@
-apply plugin: 'org.springframework.boot'
+
+plugins {
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'java'
+}
 
 dependencies {
 	implementation project(':reactive-web')
