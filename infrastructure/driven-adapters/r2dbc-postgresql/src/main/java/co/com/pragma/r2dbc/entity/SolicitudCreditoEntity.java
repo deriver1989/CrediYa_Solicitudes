@@ -38,4 +38,13 @@ public class SolicitudCreditoEntity {
         this.documentoCliente = documentoCliente;
         this.estado =  estado;
     }
+
+    public SolicitudCreditoEntity(Long id, Long tipoPrestamo, BigDecimal monto, Integer plazo, String documentoCliente, String estado) {
+        this.id=id;
+        this.tipoPrestamo = tipoPrestamo;
+        this.monto = monto;
+        this.plazo = plazo;
+        this.documentoCliente = documentoCliente;
+        this.estado =  estado;
+    }
 }

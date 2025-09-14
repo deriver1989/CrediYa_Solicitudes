@@ -2,12 +2,13 @@ package co.com.pragma.api.handler;
 
 import co.com.pragma.api.mensaje.Mensaje;
 import co.com.pragma.api.request.SolicitudCreditoRequest;
+import co.com.pragma.api.request.cambiarEstadoRequest;
 import co.com.pragma.model.solicitud.SolicitudCredito;
+import co.com.pragma.usecase.solicitud.CambiarEstadoSolicitudUseCase;
 import co.com.pragma.usecase.solicitud.SolicitudUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class HandlerSolicitud {
 
     private final SolicitudUseCase solicitudUseCase;
+    private final CambiarEstadoSolicitudUseCase cambiarEstadoSolicitudUseCase;
     private final Validator validator;
 
     public Mono<ServerResponse> guardarSolicitudCredito(ServerRequest serverRequest) {
@@ -80,6 +82,18 @@ public class HandlerSolicitud {
         nuevo.setUsername(username);
         nuevo.setRoles(roles);
         return nuevo;
+    }
+
+    public Mono<ServerResponse> cambiarEstado(ServerRequest request) {
+
+        return request.bodyToMono(cambiarEstadoRequest.class)
+                .flatMap(datos -> {
+                    return cambiarEstadoSolicitudUseCase.cambiarEstadoSolicitudCredito(datos.getIdSolicitud(), datos.getEstado())
+                            .flatMap(user -> ServerResponse.status(HttpStatus.CREATED).bodyValue(user));
+                })
+                .onErrorResume(e -> {
+                    return ServerResponse.badRequest().bodyValue(generarJsonMsg("Error general",Mensaje.ERROR_GENERAR_REPORTE));
+                });
     }
 
 }

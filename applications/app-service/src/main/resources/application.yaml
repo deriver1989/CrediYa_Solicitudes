@@ -13,9 +13,9 @@ spring:
     include: null
 springdoc:
   api-docs:
-    path: /api-docs # Path for the OpenAPI specification (JSON/YAML)
+    path: "/api-docs"
   swagger-ui:
-    path: /swagger-ui.html # Path for the Swagger UI interface
+    path: "/swagger-ui.html"
 management:
   endpoints:
     web:
@@ -30,7 +30,7 @@ cors:
 adapters:
   r2dbc:
     host: "localhost"
-    port: 5432
+    port: 5433
     database: "CrediYa"
     schema: null
     username: "postgres"
@@ -38,3 +38,8 @@ adapters:
 app:
   jwt:
     secret: "626f6f7463616d705f707261676d615f636c6176655f706172615f67656e657261725f746f6b656e"
+adapter:
+  sqs:
+    region: "us-east-1"
+    queueUrl: "http://localhost:4566/000000000000/sample"
+    endpoint: "http://localhost:4566/000000000000/sample"

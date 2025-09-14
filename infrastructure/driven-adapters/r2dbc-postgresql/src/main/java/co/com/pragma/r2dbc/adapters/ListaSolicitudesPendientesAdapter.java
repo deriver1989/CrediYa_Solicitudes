@@ -4,7 +4,7 @@ import co.com.pragma.model.solicitud.ListadoSolicitudes;
 import co.com.pragma.model.solicitud.PendienteAprobacion;
 import co.com.pragma.model.solicitud.PendienteAprobacionRequest;
 import co.com.pragma.model.solicitud.gateways.SolicitudCreditoListadoRepository;
-import co.com.pragma.r2dbc.repository.SolicitudCreditoRepository;
+import co.com.pragma.r2dbc.repository.SolicitudCreditoPostgreRepository;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ListaSolicitudesPendientesAdapter implements SolicitudCreditoListadoRepository {
 
-    private final SolicitudCreditoRepository solicitudCreditoRepository;
+    private final SolicitudCreditoPostgreRepository solicitudCreditoRepository;
     private final DatabaseClient client;
 
     public Mono<Long> consulListadoCantidad(PendienteAprobacionRequest criterio) {

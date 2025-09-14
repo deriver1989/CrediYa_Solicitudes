@@ -9,7 +9,7 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface SolicitudCreditoRepository extends ReactiveCrudRepository<SolicitudCreditoEntity, Long>, ReactiveQueryByExampleExecutor<SolicitudCreditoEntity> {
+public interface SolicitudCreditoPostgreRepository extends ReactiveCrudRepository<SolicitudCreditoEntity, Long>, ReactiveQueryByExampleExecutor<SolicitudCreditoEntity> {
 
     @Query("""
            SELECT documento_cliente as documento,

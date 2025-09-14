@@ -2,10 +2,13 @@ package co.com.pragma.r2dbc.adapters;
 
 import co.com.pragma.model.solicitud.SolicitudCredito;
 import co.com.pragma.model.solicitud.TipoPrestamo;
+import co.com.pragma.model.solicitud.gateways.EstadoSolicitudRepository;
+import co.com.pragma.model.solicitud.gateways.SolicitudCreditoRepository;
 import co.com.pragma.r2dbc.entity.SolicitudCreditoEntity;
 import co.com.pragma.r2dbc.enums.EstadoCredito;
 import co.com.pragma.r2dbc.mensaje.Mensaje;
-import co.com.pragma.r2dbc.repository.SolicitudCreditoRepository;
+
+import co.com.pragma.r2dbc.repository.SolicitudCreditoPostgreRepository;
 import co.com.pragma.r2dbc.repository.TipoPrestamoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,19 +17,18 @@ import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
-public class SolicitudCreditoRepositoryAdapter implements co.com.pragma.model.solicitud.gateways.SolicitudCreditoRepository {
+public class SolicitudCreditoRepositoryAdapter implements SolicitudCreditoRepository, EstadoSolicitudRepository {
 
-    private final SolicitudCreditoRepository solicitudCreditoRepository;
+    private final SolicitudCreditoPostgreRepository solicitudCreditoPostgreRepository;
     private final TransactionalOperator txOperator;
     private final TipoPrestamoRepository tipoPrestamoRepository;
 
-    public SolicitudCreditoRepositoryAdapter(SolicitudCreditoRepository solicitudCreditoRepository,
-                                             TransactionalOperator txOperator,
-                                             TipoPrestamoRepository tipoPrestamoRepository) {
-        this.solicitudCreditoRepository = solicitudCreditoRepository;
+    public SolicitudCreditoRepositoryAdapter(SolicitudCreditoPostgreRepository solicitudCreditoPostgreRepository, TransactionalOperator txOperator, TipoPrestamoRepository tipoPrestamoRepository) {
+        this.solicitudCreditoPostgreRepository = solicitudCreditoPostgreRepository;
         this.txOperator = txOperator;
         this.tipoPrestamoRepository = tipoPrestamoRepository;
     }
+
 
     @Override
     public Mono<SolicitudCredito> saveSolicitudCredito(SolicitudCredito solicitud) {
@@ -38,7 +40,7 @@ public class SolicitudCreditoRepositoryAdapter implements co.com.pragma.model.so
                 EstadoCredito.PENDIENTE_APROBACION.name()
                 );
 
-        return solicitudCreditoRepository.save(entity)
+        return solicitudCreditoPostgreRepository.save(entity)
                 .as(txOperator::transactional)
                 .map(saved -> new SolicitudCredito(saved.getDocumentoCliente(),
                         saved.getPlazo(),
@@ -58,4 +60,38 @@ public class SolicitudCreditoRepositoryAdapter implements co.com.pragma.model.so
                 );
     }
 
+    @Override
+    public Mono<SolicitudCredito> findById(Long id) {
+        return solicitudCreditoPostgreRepository.findById(id)
+                .map(
+                solicitud -> SolicitudCredito.builder()
+                        .documentoCliente(solicitud.getDocumentoCliente())
+                        .monto(solicitud.getMonto())
+                        .plazo(solicitud.getPlazo())
+                        .tipoPrestamo(solicitud.getTipoPrestamo())
+                        .estado(solicitud.getEstado())
+                        .build()
+                );
+    }
+
+    @Override
+    public Mono<SolicitudCredito> save(SolicitudCredito solicitud) {
+        SolicitudCreditoEntity entity = new SolicitudCreditoEntity(
+                solicitud.getId(),
+                solicitud.getTipoPrestamo(),
+                solicitud.getMonto(),
+                solicitud.getPlazo(),
+                solicitud.getDocumentoCliente(),
+                solicitud.getEstado()
+        );
+
+        return solicitudCreditoPostgreRepository.save(entity)
+                .as(txOperator::transactional)
+                .map(saved -> new SolicitudCredito(saved.getDocumentoCliente(),
+                        saved.getPlazo(),
+                        saved.getMonto(),
+                        saved.getTipoPrestamo()))
+                .doOnError(error -> log.error(Mensaje.ERROR_GUARDAR_SOLICITUD, error))
+                .doOnSuccess(user -> log.info(Mensaje.SOLICITUD_GUARDADA_EXITO));
+    }
 }

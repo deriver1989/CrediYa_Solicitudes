@@ -14,11 +14,12 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class SolicitudCredito {
-
+    private Long id;
     private String documentoCliente;
     private Integer plazo;
     private BigDecimal monto;
     private Long tipoPrestamo;
+    private String estado;
     private List<String> roles;
     private String username;
 
@@ -27,6 +28,14 @@ public class SolicitudCredito {
         this.plazo = plazo;
         this.monto = monto;
         this.tipoPrestamo = tipoPrestamo;
+    }
+
+    public SolicitudCredito(String documentoCliente, Integer plazo, BigDecimal monto, Long tipoPrestamo, String estado) {
+        this.documentoCliente = documentoCliente;
+        this.plazo = plazo;
+        this.monto = monto;
+        this.tipoPrestamo = tipoPrestamo;
+        this.estado = estado;
     }
 
 
