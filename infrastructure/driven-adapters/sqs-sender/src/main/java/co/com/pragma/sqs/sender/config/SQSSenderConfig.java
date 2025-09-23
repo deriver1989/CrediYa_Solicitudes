@@ -3,13 +3,7 @@ package co.com.pragma.sqs.sender.config;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
-import software.amazon.awssdk.auth.credentials.ContainerCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.SystemPropertyCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.metrics.MetricPublisher;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
@@ -21,6 +15,14 @@ import java.net.URI;
 public class SQSSenderConfig {
 
     @Bean
+    SqsAsyncClient sqs(SQSSenderProperties p) {
+        return SqsAsyncClient.builder()
+                .region(Region.of(p.region()))
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
+    }
+
+    /*@Bean
     public SqsAsyncClient configSqs(SQSSenderProperties properties, MetricPublisher publisher) {
         return SqsAsyncClient.builder()
                 .endpointOverride(resolveEndpoint(properties))
@@ -28,7 +30,7 @@ public class SQSSenderConfig {
                 .overrideConfiguration(o -> o.addMetricPublisher(publisher))
                 .credentialsProvider(getProviderChain())
                 .build();
-    }
+    }*/
 
     private AwsCredentialsProviderChain getProviderChain() {
         return AwsCredentialsProviderChain.builder()

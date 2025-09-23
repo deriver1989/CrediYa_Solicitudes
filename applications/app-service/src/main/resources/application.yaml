@@ -40,6 +40,12 @@ app:
     secret: "626f6f7463616d705f707261676d615f636c6176655f706172615f67656e657261725f746f6b656e"
 adapter:
   sqs:
-    region: "us-east-1"
-    queueUrl: "http://localhost:4566/000000000000/sample"
-    endpoint: "http://localhost:4566/000000000000/sample"
+    region: ${AWS_REGION}
+    queueUrl: ${SQS_QUEUE_URL}
+    endpoint: ${SQS_ENDPOINT}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    co.com.miapp: DEBUG

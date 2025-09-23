@@ -17,7 +17,7 @@ public class SQSSender implements ClienteSQSRepository {
     private final SQSSenderProperties properties;
     private final SqsAsyncClient client;
 
-    public Mono<String> send(String message) {
+    public Mono<String> sendMessage (String message) {//public Mono<String> send(String message) {
         return Mono.fromCallable(() -> buildRequest(message))
                 .flatMap(request -> Mono.fromFuture(client.sendMessage(request)))
                 .doOnNext(response -> log.debug("Message sent {}", response.messageId()))
@@ -29,5 +29,21 @@ public class SQSSender implements ClienteSQSRepository {
                 .queueUrl(properties.queueUrl())
                 .messageBody(message)
                 .build();
+    }
+
+    @Override
+    public void send(String messageBody) {
+        SendMessageRequest request = SendMessageRequest.builder()
+                .queueUrl(properties.queueUrl())
+                .messageBody(messageBody)
+                .build();
+
+        Mono.fromFuture( client.sendMessage(request))
+                .doOnSuccess(response -> log.info("✅ Mensaje enviado con ID: "))
+                .doOnError(e ->{
+                    System.err.println("❌ Error al enviar mensaje: " + e.getMessage());
+                    log.error("❌ Error al enviar mensaje: " + e.getMessage());
+                })
+                .subscribe();
     }
 }

@@ -27,7 +27,7 @@ public class CambiarEstadoSolicitudUseCase {
                     return estadoSolicitudRepository.save(solicitud)
                             .doOnSuccess(saved -> {
                                 if ("Aprobado".equalsIgnoreCase(nuevoEstado) || "Rechazado".equalsIgnoreCase(nuevoEstado)) {
-                                    //clienteSQSRepository.send(Mensaje.CAMBIO_ESTADO_SOLICITUD+nuevoEstado);
+                                    clienteSQSRepository.send(Mensaje.CAMBIO_ESTADO_SOLICITUD+nuevoEstado);
                                 }
                             });
                 });
